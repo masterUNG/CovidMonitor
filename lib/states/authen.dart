@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:covidmonitor/models/user_model.dart';
+import 'package:covidmonitor/utility/dialog.dart';
+import 'package:covidmonitor/utility/my_constant.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class Authen extends StatefulWidget {
@@ -6,6 +12,8 @@ class Authen extends StatefulWidget {
 }
 
 class _AuthenState extends State<Authen> {
+  String user, password;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,7 +52,7 @@ class _AuthenState extends State<Authen> {
               ),
             ),
             TextButton(
-              onPressed: ()=> Navigator.pushNamed(context, '/createAccount'),
+              onPressed: () => Navigator.pushNamed(context, '/createAccount'),
               child: Text('Create New Account!'),
             ),
           ],
@@ -56,7 +64,7 @@ class _AuthenState extends State<Authen> {
   Center buildContent() {
     return Center(
       child: SingleChildScrollView(
-              child: Column(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             buildLogo(),
@@ -74,7 +82,13 @@ class _AuthenState extends State<Authen> {
     return Container(
       width: 250,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          if ((user?.isEmpty ?? true) || (password?.isEmpty ?? true)) {
+            normalDialog(context, 'กรอกไม่ครบ ?', 'กรุณากรอก ทุกช่องคะ !!!');
+          } else {
+            checkAuthen();
+          }
+        },
         child: Text('Login'),
         style: ElevatedButton.styleFrom(
           shape:
@@ -85,12 +99,38 @@ class _AuthenState extends State<Authen> {
     );
   }
 
+  Future<Null> checkAuthen() async {
+    String path =
+        '${MyConstant().domain}/covidmonitor/getUserWhereUser.php?isAdd=true&user=$user';
+    await Dio().get(path).then((value) {
+      print('response form API ==> $value');
+      if (value.toString() == 'null') {
+        normalDialog(context, 'User False ?', 'No This $user in my database');
+      } else {
+        for (var item in json.decode(value.data)) {
+          print('item ==> $item');
+          UserModel model = UserModel.fromMap(item);
+          // String password = item['password'];
+          // String password = model.password;
+          if (password == model.password) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/myService', (route) => false);
+          } else {
+            normalDialog(
+                context, 'Password False', 'Please Try Agains Password False');
+          }
+        }
+      }
+    });
+  }
+
   Container buildUser() {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white70, borderRadius: BorderRadius.circular(20)),
       width: 250,
       child: TextField(
+        onChanged: (value) => user = value.trim(),
         decoration: InputDecoration(
           labelText: 'User :',
           prefixIcon: Icon(Icons.account_circle_rounded),
@@ -107,6 +147,7 @@ class _AuthenState extends State<Authen> {
       margin: EdgeInsets.symmetric(vertical: 16),
       width: 250,
       child: TextField(
+        onChanged: (value) => password = value.trim(),
         obscureText: true,
         decoration: InputDecoration(
           labelText: 'Password :',
