@@ -1,4 +1,6 @@
 import 'package:covidmonitor/utility/dialog.dart';
+import 'package:covidmonitor/utility/my_constant.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -136,11 +138,25 @@ class _CreateAccountState extends State<CreateAccount> {
               normalDialog(context, 'Have Space ?', 'Please Fill Every Blank');
             } else if (gender == null) {
               normalDialog(context, 'No Gender ?', 'Please Tap Male or Female');
-            } else {}
+            } else {
+              checkUser();
+            }
           },
           icon: Icon(Icons.cloud_upload),
           label: Text('Create Account'),
         ));
+  }
+
+  Future<Null> checkUser() async {
+    String path =
+        '${MyConstant().domain}/covidmonitor/getUserWhereUser.php?isAdd=true&user=$user';
+    await Dio().get(path).then((value) {
+      print('value = $value');
+      if (value.toString() != 'null') {
+        normalDialog(
+            context, 'User False', '$user user นี่ มีคนอื่นใช้ไปแล้ว คะ');
+      } else {}
+    });
   }
 
   Row buildRow() {
