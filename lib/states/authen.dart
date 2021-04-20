@@ -9,9 +9,14 @@ class _AuthenState extends State<Authen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(width: 120,
-        child: Image.asset('images/logo.png'),
-      ),
+      body: buildLogo(),
+    );
+  }
+
+  Container buildLogo() {
+    return Container(
+      width: 120,
+      child: Image.asset('images/logo.png'),
     );
   }
 }
