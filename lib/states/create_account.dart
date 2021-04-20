@@ -150,12 +150,23 @@ class _CreateAccountState extends State<CreateAccount> {
   Future<Null> checkUser() async {
     String path =
         '${MyConstant().domain}/covidmonitor/getUserWhereUser.php?isAdd=true&user=$user';
-    await Dio().get(path).then((value) {
+    await Dio().get(path).then((value) async {
       print('value = $value');
       if (value.toString() != 'null') {
         normalDialog(
             context, 'User False', '$user user นี่ มีคนอื่นใช้ไปแล้ว คะ');
-      } else {}
+      } else {
+        String path2 =
+            '${MyConstant().domain}/covidmonitor/insertUser.php?isAdd=true&name=$name&gender=$gender&address=$address&phone=$phone&user=$user&password=$password';
+        await Dio().get(path2).then((value) {
+          if (value.toString() == 'true') {
+            Navigator.pop(context);
+          } else {
+            normalDialog(
+                context, 'Create User False', 'Please Fill EveryBlank');
+          }
+        });
+      }
     });
   }
 
