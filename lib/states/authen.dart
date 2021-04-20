@@ -44,7 +44,7 @@ class _AuthenState extends State<Authen> {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: ()=> Navigator.pushNamed(context, '/createAccount'),
               child: Text('Create New Account!'),
             ),
           ],
@@ -55,15 +55,17 @@ class _AuthenState extends State<Authen> {
 
   Center buildContent() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          buildLogo(),
-          buildText(),
-          buildUser(),
-          buildPassword(),
-          buildLogin(),
-        ],
+      child: SingleChildScrollView(
+              child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            buildLogo(),
+            buildText(),
+            buildUser(),
+            buildPassword(),
+            buildLogin(),
+          ],
+        ),
       ),
     );
   }
