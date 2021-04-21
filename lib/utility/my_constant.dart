@@ -1,4 +1,4 @@
 class MyConstant {
-  final String domain = 'https://d7a0ca3e4410.ngrok.io';
+  final String domain = 'https://ca754ee49428.ngrok.io';
   MyConstant();
 }
