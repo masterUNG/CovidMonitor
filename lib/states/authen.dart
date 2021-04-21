@@ -5,6 +5,7 @@ import 'package:covidmonitor/utility/dialog.dart';
 import 'package:covidmonitor/utility/my_constant.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Authen extends StatefulWidget {
   @override
@@ -102,7 +103,7 @@ class _AuthenState extends State<Authen> {
   Future<Null> checkAuthen() async {
     String path =
         '${MyConstant().domain}/covidmonitor/getUserWhereUser.php?isAdd=true&user=$user';
-    await Dio().get(path).then((value) {
+    await Dio().get(path).then((value) async {
       print('response form API ==> $value');
       if (value.toString() == 'null') {
         normalDialog(context, 'User False ?', 'No This $user in my database');
@@ -113,6 +114,11 @@ class _AuthenState extends State<Authen> {
           // String password = item['password'];
           // String password = model.password;
           if (password == model.password) {
+            SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+            preferences.setString('user', model.user);
+            preferences.setString('name', model.name);
+
             Navigator.pushNamedAndRemoveUntil(
                 context, '/myService', (route) => false);
           } else {
