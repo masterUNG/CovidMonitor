@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:covidmonitor/models/user_model.dart';
+import 'package:covidmonitor/utility/my_constant.dart';
 import 'package:covidmonitor/widget/informaion.dart';
 import 'package:covidmonitor/widget/list_temp.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +16,7 @@ class MyService extends StatefulWidget {
 class _MyServiceState extends State<MyService> {
   String name;
   Widget current = ListTemp();
+  UserModel model;
 
   @override
   void initState() {
@@ -22,6 +28,15 @@ class _MyServiceState extends State<MyService> {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     setState(() {
       name = preferences.getString('name');
+    });
+
+    String user = preferences.getString('user');
+    String path =
+        '${MyConstant().domain}/covidmonitor/getUserWhereUser.php?isAdd=true&user=$user';
+    await Dio().get(path).then((value) {
+      for (var item in json.decode(value.data)) {
+        model = UserModel.fromMap(item);
+      }
     });
   }
 
@@ -76,7 +91,7 @@ class _MyServiceState extends State<MyService> {
       subtitle: Text('รายละเอียด ของ User ที่ Login อยู่'),
       onTap: () {
         setState(() {
-          current = Information();
+          current = Information(userModel: model,);
         });
         Navigator.pop(context);
       },

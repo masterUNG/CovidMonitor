@@ -118,6 +118,7 @@ class _AuthenState extends State<Authen> {
                 await SharedPreferences.getInstance();
             preferences.setString('user', model.user);
             preferences.setString('name', model.name);
+            preferences.setString('id', model.id);
 
             Navigator.pushNamedAndRemoveUntil(
                 context, '/myService', (route) => false);
